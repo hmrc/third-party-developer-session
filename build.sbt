@@ -19,3 +19,16 @@ lazy val it = project
   .dependsOn(microservice % "test->test")
   .settings(DefaultBuildSettings.itSettings())
   .settings(libraryDependencies ++= AppDependencies.it)
+
+
+  commands ++= Seq(
+  Command.command("cleanAll") { state => "clean" :: "it/clean" :: state },
+  Command.command("fmtAll") { state => "scalafmtAll" :: "it/scalafmtAll" :: state },
+  Command.command("fixAll") { state => "scalafixAll" :: "it/scalafixAll" :: state },
+  Command.command("testAll") { state => "test" :: "it/test" :: state },
+  Command.command("run-all-tests") { state => "testAll" :: state },
+  Command.command("clean-and-test") { state => "clean" :: "compile" :: "run-all-tests" :: state },
+  Command.command("pre-commit") { state => "clean" :: "scalafmtAll" :: "scalafixAll" :: "coverage" :: "run-all-tests" :: "coverageOff" :: "coverageAggregate" :: state }
+)
+
+Global / bloopAggregateSourceDependencies := true
