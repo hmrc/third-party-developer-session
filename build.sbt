@@ -1,7 +1,10 @@
 import uk.gov.hmrc.DefaultBuildSettings
 
+
 ThisBuild / majorVersion := 0
 ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / semanticdbEnabled := true
+ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 
 lazy val microservice = Project("third-party-developer-session", file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
