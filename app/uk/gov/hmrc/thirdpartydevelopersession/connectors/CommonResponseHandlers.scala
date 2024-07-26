@@ -19,6 +19,7 @@ package uk.gov.hmrc.thirdpartydevelopersession.connectors
 import play.api.http.Status._
 import uk.gov.hmrc.http.UpstreamErrorResponse
 
+// $COVERAGE-OFF$
 trait CommonResponseHandlers {
 
   type ErrorOr[A] = Either[UpstreamErrorResponse, A]
@@ -40,3 +41,4 @@ trait CommonResponseHandlers {
       case Left(err)                                       => throw err
     }
 }
+// $COVERAGE-ON$

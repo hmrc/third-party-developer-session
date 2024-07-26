@@ -45,7 +45,7 @@ class UserSessionProxyConnector @Inject() (
       .execute[Option[UserSession]]
   }
 
-  def updateSessionLoggedInState(userSessionId: UserSessionId, state: LoggedInState)(implicit hc: HeaderCarrier): Future[Option[UserSession]] = metrics.record(api) {
+  def updateLoggedInState(userSessionId: UserSessionId, state: LoggedInState)(implicit hc: HeaderCarrier): Future[Option[UserSession]] = metrics.record(api) {
     http.put(url"$serviceBaseUrl/session/$userSessionId/loggedInState/${state}")
       .execute[Option[UserSession]]
   }

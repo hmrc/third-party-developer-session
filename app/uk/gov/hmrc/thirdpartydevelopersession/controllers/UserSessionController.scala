@@ -45,8 +45,8 @@ class UserSessionController @Inject() (sessionProxyConnector: UserSessionProxyCo
       .recover(recovery)
   }
 
-  def updateSessionLoggedInState(userSessionId: UserSessionId, state: LoggedInState) = Action.async { implicit request =>
-    sessionProxyConnector.updateSessionLoggedInState(userSessionId, state)
+  def updateLoggedInState(userSessionId: UserSessionId, state: LoggedInState) = Action.async { implicit request =>
+    sessionProxyConnector.updateLoggedInState(userSessionId, state)
       .map(_.fold(sessionNotFound(userSessionId))(userSession => Ok(Json.toJson(userSession))))
       .recover(recovery)
   }

@@ -23,30 +23,12 @@ sealed trait ErrorCode
 
 object ErrorCode {
 
-  // case object INVALID_REQUEST_PAYLOAD  extends ErrorCode
   case object INTERNAL_SERVER_ERROR extends ErrorCode
-  // case object EMAIL_ALREADY_REGISTERED extends ErrorCode
-  // case object INVALID_PASSWORD_CHANGE  extends ErrorCode
-  // case object UNVERIFIED               extends ErrorCode
-  // case object PASSWORD_EXPIRED         extends ErrorCode
-  // case object INVALID_EMAIL            extends ErrorCode
-  // case object INVALID_DEVICE_SESSION   extends ErrorCode
   case object INVALID_SESSION       extends ErrorCode
-  // case object LOCKED                   extends ErrorCode
-  // case object USERID_NOT_FOUND         extends ErrorCode
 
   val values = Set(
-    // INVALID_REQUEST_PAYLOAD,
     INTERNAL_SERVER_ERROR,
-    // EMAIL_ALREADY_REGISTERED,
-    // INVALID_PASSWORD_CHANGE,
-    // UNVERIFIED,
-    // PASSWORD_EXPIRED,
-    // INVALID_EMAIL,
-    // INVALID_DEVICE_SESSION,
     INVALID_SESSION
-    // LOCKED,
-    // USERID_NOT_FOUND
   )
 
   def apply(text: String): Option[ErrorCode] = ErrorCode.values.find(_.toString() == text.toUpperCase)

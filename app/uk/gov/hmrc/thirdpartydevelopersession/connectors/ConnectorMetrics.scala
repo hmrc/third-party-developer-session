@@ -23,6 +23,7 @@ import scala.util.{Failure, Success}
 import uk.gov.hmrc.play.bootstrap.metrics.Metrics
 import uk.gov.hmrc.play.http.metrics.common.API
 
+// $COVERAGE-OFF$
 sealed trait Timer {
   def stop(): Unit
 }
@@ -64,3 +65,4 @@ class ConnectorMetricsImpl @Inject() (metrics: Metrics) extends ConnectorMetrics
 class NoopConnectorMetrics extends ConnectorMetrics {
   def record[A](api: API)(f: => Future[A])(implicit ec: ExecutionContext): Future[A] = f
 }
+// $COVERAGE-ON$

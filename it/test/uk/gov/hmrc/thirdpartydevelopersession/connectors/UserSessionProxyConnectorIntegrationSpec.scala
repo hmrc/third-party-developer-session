@@ -28,9 +28,6 @@ import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.apiplatform.modules.common.domain.models.LaxEmailAddress.StringSyntax
 import uk.gov.hmrc.apiplatform.modules.common.domain.models.{LaxEmailAddress, UserId}
 import uk.gov.hmrc.apiplatform.modules.common.utils.FixedClock
-import uk.gov.hmrc.apiplatform.modules.tpd.mfa.domain.models.MfaId
-import uk.gov.hmrc.apiplatform.modules.tpd.mfa.dto._
-import uk.gov.hmrc.apiplatform.modules.tpd.session.dto._
 import uk.gov.hmrc.apiplatform.modules.tpd.test.builders.UserBuilder
 import uk.gov.hmrc.apiplatform.modules.tpd.test.utils.LocalUserIdTracker
 import uk.gov.hmrc.thirdpartydevelopersession.connectors.ConnectorMetrics
@@ -39,6 +36,7 @@ import uk.gov.hmrc.thirdpartydevelopersession.connectors.UserSessionProxyConnect
 import uk.gov.hmrc.apiplatform.modules.tpd.session.domain.models.UserSession
 import uk.gov.hmrc.apiplatform.modules.tpd.session.domain.models.LoggedInState
 import uk.gov.hmrc.thirdpartydevelopersession.connectors.NoopConnectorMetrics
+import uk.gov.hmrc.apiplatform.modules.common.domain.models.LaxEmailAddressData
 
 class UserSessionProxyConnectorIntegrationSpec extends BaseConnectorIntegrationSpec
     with GuiceOneAppPerSuite with UserBuilder with LocalUserIdTracker with WireMockExtensions with FixedClock {
@@ -56,18 +54,9 @@ class UserSessionProxyConnectorIntegrationSpec extends BaseConnectorIntegrationS
 
   trait Setup {
     implicit val hc: HeaderCarrier = HeaderCarrier()
-
-    val userEmail: LaxEmailAddress = "thirdpartydeveloper@example.com".toLaxEmail
+    val userEmail: LaxEmailAddress = LaxEmailAddressData.emailA
     val userId: UserId             = idOf(userEmail)
-
-    val userPassword                                                     = "password1!"
-    val userSessionId                                                        = UserSessionId.random
-    val loginRequest: SessionCreateWithDeviceRequest                     = SessionCreateWithDeviceRequest(userEmail, userPassword, mfaMandatedForUser = Some(false), None)
-    val accessCode                                                       = "123456"
-    val nonce                                                            = "ABC-123"
-    val mfaId: MfaId                                                     = MfaId.random
-    val accessCodeAuthenticationRequest: AccessCodeAuthenticationRequest = AccessCodeAuthenticationRequest(userEmail, accessCode, nonce, mfaId)
-
+    val userSessionId: UserSessionId             = UserSessionId.random
     val underTest: UserSessionProxyConnector     = app.injector.instanceOf[UserSessionProxyConnector]
   }
 
@@ -87,8 +76,8 @@ class UserSessionProxyConnectorIntegrationSpec extends BaseConnectorIntegrationS
                            |      "email":"${userEmail.text}",
                            |      "firstName":"John",
                            |      "lastName": "Doe",
-                           |      "registrationTime": "${nowAsText}",
-                           |      "lastModified": "${nowAsText}",
+                           |      "registrationTime": "${Texts.now}",
+                           |      "lastModified": "${Texts.now}",
                            |      "verified": true,
                            |      "mfaDetails": [],
                            |      "emailPreferences": { "interests" : [], "topics": [] }
@@ -180,7 +169,7 @@ class UserSessionProxyConnectorIntegrationSpec extends BaseConnectorIntegrationS
               .withJsonBody(session)
           )
       )
-      await(underTest.updateSessionLoggedInState(userSessionId, LoggedInState.LOGGED_IN)).value shouldBe session
+      await(underTest.updateLoggedInState(userSessionId, LoggedInState.LOGGED_IN)).value shouldBe session
     }
 
     "error with SessionInvalid if we get a 404 response" in new Setup {
@@ -192,7 +181,7 @@ class UserSessionProxyConnectorIntegrationSpec extends BaseConnectorIntegrationS
               .withStatus(NOT_FOUND)
           )
       )
-      await(underTest.updateSessionLoggedInState(userSessionId, LoggedInState.LOGGED_IN)) shouldBe None
+      await(underTest.updateLoggedInState(userSessionId, LoggedInState.LOGGED_IN)) shouldBe None
     }
   }
 }

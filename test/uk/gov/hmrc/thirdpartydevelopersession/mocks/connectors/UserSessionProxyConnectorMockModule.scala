@@ -39,5 +39,26 @@ trait UserSessionProxyConnectorMockModule extends MockitoSugar with ArgumentMatc
       def willFailWith(userSessionId: UserSessionId, exception: Exception) =
         when(aMock.fetchSession(eqTo(userSessionId))(*)).thenReturn(failed(exception))
     }
+
+    object UpdateSession {
+
+      def willSucceedWith(userSesssion: UserSession) =
+        when(aMock.updateLoggedInState(*[UserSessionId], *)(*)).thenReturn(successful(Some(userSesssion)))
+
+      def willReturnNoSession() =
+        when(aMock.updateLoggedInState(*[UserSessionId], *)(*)).thenReturn(successful(None))
+
+      def willFailWith(exception: Exception) =
+        when(aMock.updateLoggedInState(*[UserSessionId], *)(*)).thenReturn(failed(exception))
+    }
+
+    object DeleteSession {
+
+      def willSucceedFor(userSessionId: UserSessionId) =
+        when(aMock.deleteSession(eqTo(userSessionId))(*)).thenReturn(successful(200))
+
+      def willFailWith(userSessionId: UserSessionId, exception: Exception) =
+        when(aMock.deleteSession(eqTo(userSessionId))(*)).thenReturn(failed(exception))
+    }
   }
 }

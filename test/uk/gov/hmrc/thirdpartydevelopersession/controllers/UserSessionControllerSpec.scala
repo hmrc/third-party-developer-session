@@ -33,38 +33,77 @@ class UserSessionControllerSpec extends AsyncHmrcSpec {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
   trait Setup extends UserSessionProxyConnectorMockModule with LocalUserIdTracker with UserTestData {
-    val controller = new UserSessionController(UserSessionProxyConnectorMock.aMock, stubControllerComponents())
+    val controller      = new UserSessionController(UserSessionProxyConnectorMock.aMock, stubControllerComponents())
+    val OurRegularError = new RuntimeException("Bang")
 
-    val validSessionId = UserSessionId.random
-    val validSession   = UserSession(validSessionId, LoggedInState.LOGGED_IN, JoeBloggs)
-    UserSessionProxyConnectorMock.FetchSession.willReturn(validSession)
-
+    val validSessionId    = UserSessionId.random
+    val validSession      = UserSession(validSessionId, LoggedInState.LOGGED_IN, JoeBloggs)
     val notfoundSessionId = UserSessionId.random
-    UserSessionProxyConnectorMock.FetchSession.willReturnNoSession(notfoundSessionId)
-
-    val brokenSessionId = UserSessionId.random
-    UserSessionProxyConnectorMock.FetchSession.willFailWith(brokenSessionId, new RuntimeException("Bang"))
+    val brokenSessionId   = UserSessionId.random
   }
 
-  "Session fetch session" should {
+  "Fetch session" should {
 
-    "finds an valid session" in new Setup {
-
+    "find an valid session" in new Setup {
+      UserSessionProxyConnectorMock.FetchSession.willReturn(validSession)
       val result: Future[Result] = controller.fetch(validSessionId).apply(FakeRequest())
       status(result) shouldBe OK
 
       contentAsJson(result) shouldBe Json.toJson(validSession)
     }
 
-    "finds no valid session" in new Setup {
-
+    "find no valid session" in new Setup {
+      UserSessionProxyConnectorMock.FetchSession.willReturnNoSession(notfoundSessionId)
       val result: Future[Result] = controller.fetch(notfoundSessionId).apply(FakeRequest())
       status(result) shouldBe NOT_FOUND
     }
 
-    "returns 5xx when appropriate" in new Setup {
-
+    "return 5xx when appropriate" in new Setup {
+      UserSessionProxyConnectorMock.FetchSession.willFailWith(brokenSessionId, OurRegularError)
       val result: Future[Result] = controller.fetch(brokenSessionId).apply(FakeRequest())
+      status(result) shouldBe INTERNAL_SERVER_ERROR
+    }
+  }
+
+  "Update State of session" should {
+
+    "find an valid session and update it" in new Setup {
+      UserSessionProxyConnectorMock.UpdateSession.willSucceedWith(validSession)
+      val result: Future[Result] = controller.updateLoggedInState(validSessionId, LoggedInState.LOGGED_IN).apply(FakeRequest())
+      status(result) shouldBe OK
+      contentAsJson(result) shouldBe Json.toJson(validSession)
+    }
+
+    "return invalid session error code when no session found" in new Setup {
+      UserSessionProxyConnectorMock.UpdateSession.willReturnNoSession()
+      val result: Future[Result] = controller.updateLoggedInState(notfoundSessionId, LoggedInState.LOGGED_IN).apply(FakeRequest())
+      status(result) shouldBe NOT_FOUND
+    }
+
+    "return 5xx when appropriate" in new Setup {
+      UserSessionProxyConnectorMock.UpdateSession.willFailWith(OurRegularError)
+      val result: Future[Result] = controller.updateLoggedInState(brokenSessionId, LoggedInState.LOGGED_IN).apply(FakeRequest())
+      status(result) shouldBe INTERNAL_SERVER_ERROR
+    }
+  }
+
+  "Delete session" should {
+
+    "find an valid session to delete" in new Setup {
+      UserSessionProxyConnectorMock.DeleteSession.willSucceedFor(validSessionId)
+      val result: Future[Result] = controller.delete(validSessionId).apply(FakeRequest())
+      status(result) shouldBe NO_CONTENT
+    }
+
+    "find no valid session to delete" in new Setup {
+      UserSessionProxyConnectorMock.DeleteSession.willSucceedFor(notfoundSessionId)
+      val result: Future[Result] = controller.delete(notfoundSessionId).apply(FakeRequest())
+      status(result) shouldBe NO_CONTENT
+    }
+
+    "return 5xx when appropriate" in new Setup {
+      UserSessionProxyConnectorMock.DeleteSession.willFailWith(brokenSessionId, OurRegularError)
+      val result: Future[Result] = controller.delete(brokenSessionId).apply(FakeRequest())
       status(result) shouldBe INTERNAL_SERVER_ERROR
     }
   }
