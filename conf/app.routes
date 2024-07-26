@@ -1,3 +1,6 @@
 # microservice specific routes
 
-GET        /hello-world             uk.gov.hmrc.thirdpartydevelopersession.controllers.MicroserviceHelloWorldController.hello
+GET           /session/:id                                     uk.gov.hmrc.thirdpartydevelopersession.controllers.UserSessionController.fetch(id: uk.gov.hmrc.apiplatform.modules.tpd.session.domain.models.UserSessionId)
+PUT           /session/:id/loggedInState/:state                uk.gov.hmrc.thirdpartydevelopersession.controllers.UserSessionController.updateSessionLoggedInState(id: uk.gov.hmrc.apiplatform.modules.tpd.session.domain.models.UserSessionId, state: uk.gov.hmrc.apiplatform.modules.tpd.session.domain.models.LoggedInState)
+DELETE        /session/:id                                     uk.gov.hmrc.thirdpartydevelopersession.controllers.UserSessionController.delete(id: uk.gov.hmrc.apiplatform.modules.tpd.session.domain.models.UserSessionId)
+

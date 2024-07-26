@@ -16,12 +16,15 @@
 
 package uk.gov.hmrc.thirdpartydevelopersession.config
 
-import com.google.inject.AbstractModule
+import play.api.{Configuration, Environment}
 
-class Module extends AbstractModule {
+import uk.gov.hmrc.thirdpartydevelopersession.connectors.{ConnectorMetrics, ConnectorMetricsImpl}
 
-  override def configure(): Unit = {
+class Module extends play.api.inject.Module {
 
-    bind(classOf[AppConfig]).asEagerSingleton()
+  def bindings(environment: Environment, configuration: Configuration): Seq[play.api.inject.Binding[_]] = {
+    Seq(
+      bind[ConnectorMetrics].to[ConnectorMetricsImpl]
+    )
   }
 }

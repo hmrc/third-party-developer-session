@@ -13,9 +13,13 @@ lazy val microservice = Project("third-party-developer-session", file("."))
     // https://www.scala-lang.org/2021/01/12/configuring-and-suppressing-warnings.html
     // suppress warnings in generated routes files
     scalacOptions += "-Wconf:src=routes/.*:s",
+    routesImport ++= Seq(
+      "uk.gov.hmrc.thirdpartydevelopersession.controllers.binders._"
+    ),
   )
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(CodeCoverageSettings.settings: _*)
+
 
 lazy val it = project
   .enablePlugins(PlayScala)
