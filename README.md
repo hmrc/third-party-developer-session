@@ -1,7 +1,7 @@
 
 # third-party-developer-session
 
-This is a placeholder README.md for a new repository
+TPDS is intended to provide shared session and flow management that originally was split between TPD and TPDFE.
 
 ### License
 
