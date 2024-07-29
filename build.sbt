@@ -24,9 +24,11 @@ lazy val microservice = Project("third-party-developer-session", file("."))
 lazy val it = project
   .enablePlugins(PlayScala)
   .dependsOn(microservice % "test->test")
-  .settings(DefaultBuildSettings.itSettings())
-  .settings(libraryDependencies ++= AppDependencies.it)
-
+  .settings(
+    name := "integration-tests",
+    DefaultBuildSettings.itSettings(),
+    libraryDependencies ++= AppDependencies.it
+  )
 
   commands ++= Seq(
   Command.command("cleanAll") { state => "clean" :: "it/clean" :: state },
