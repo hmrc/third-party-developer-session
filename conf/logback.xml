@@ -22,7 +22,7 @@
     </appender>
 
 
-    <logger name="com.google.inject" level="INFO"/>
+    <logger name="com.google.inject" level="WARN"/>
 
     <logger name="org.mongodb.driver" level="WARN"/>
 
@@ -36,7 +36,7 @@
         <appender-ref ref="STDOUT"/>
     </logger>
 
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>
     </root>
