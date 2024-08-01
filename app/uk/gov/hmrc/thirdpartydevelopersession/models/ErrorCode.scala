@@ -23,10 +23,12 @@ sealed trait ErrorCode
 
 object ErrorCode {
 
-  case object INTERNAL_SERVER_ERROR extends ErrorCode
-  case object INVALID_SESSION       extends ErrorCode
+  case object INVALID_REQUEST_PAYLOAD extends ErrorCode
+  case object INTERNAL_SERVER_ERROR   extends ErrorCode
+  case object INVALID_SESSION         extends ErrorCode
 
   val values = Set(
+    INVALID_REQUEST_PAYLOAD,
     INTERNAL_SERVER_ERROR,
     INVALID_SESSION
   )

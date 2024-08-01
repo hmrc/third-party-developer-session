@@ -19,8 +19,7 @@ package uk.gov.hmrc.thirdpartydevelopersession.controllers
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
-import play.api.libs.json.Json.JsValueWrapper
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.Json
 import play.api.mvc.{ControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.thirdpartydeveloper.models.ErrorCode
@@ -58,12 +57,4 @@ class UserSessionController @Inject() (sessionProxyConnector: UserSessionProxyCo
       logger.error(e.getMessage, e)
       InternalServerError(error(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage))
   }
-
-  private def error(errorCode: ErrorCode, message: JsValueWrapper): JsObject = {
-    Json.obj(
-      "code"    -> errorCode.toString,
-      "message" -> message
-    )
-  }
-
 }
